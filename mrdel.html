@@ -3,7 +3,7 @@
 <style>
 #container {
   width: 100vw;
-  height: 100vh;
+  height: 100vw;
   position: relative;
   background-image: url(5323.jpg);
 
@@ -12,8 +12,8 @@
   background-position: center center; 
 }
 #animate {
-    width: 150px;
-    height: 150px;
+    width: 1px;
+    height: 1px;
     position: absolute;
     background-image: url(18.png);
     background-repeat: no-repeat;
@@ -36,9 +36,10 @@ function meme() {
   var audio = new Audio('anime_noises.mp3');
   audio.play();
   var elem = document.getElementById("animate");
+  elem.style.width = screen.width * .3 +'px';
+  elem.style.height = screen.height * .3 + 'px';
   elem.style.display = 'block';
-  var elem2 = document.getElementById("animate");
-  elem2.style.display = 'block';
+ 
   var count = 0;
   var id = setInterval(frame, 100);
   var yCoord = 0;
@@ -52,7 +53,6 @@ function meme() {
       elem.style.top = (yCoord - 8 + Math.random()*screen.height) + 'px';
       elem.style.left = (xLeft - 8 + Math.random()*screen.width) + 'px';
       elem2.style.top = (yCoord - 8 + Math.random()*screen.height) + 'px';
-      elem2.style.left = (xLeft - 8 + Math.random()*screen.width) + 'px';
   }
 }
 </script>
