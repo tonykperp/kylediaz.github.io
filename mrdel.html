@@ -11,11 +11,13 @@
   background-position: center center; 
 }
 #animate {
-    width: 100px;
-    height: 100px;
+    width: 150px;
+    height: 150px;
     position: absolute;
     background-image: url(18.png);
-    display: 'none';
+    background-repeat: no-repeat;
+    background-size: contain;
+    display: 'block';
 } 
 </style>
 <body>
@@ -30,8 +32,12 @@
 
 <script>
 function meme() {
+  var audio = new Audio('anime_noises.mp3');
+  audio.play();
   var elem = document.getElementById("animate");
+  elem.style.display = 'block';
   var elem2 = document.getElementById("animate");
+  elem2.style.display = 'block';
   var count = 0;
   var id = setInterval(frame, 100);
   var yCoord = 0;
@@ -42,10 +48,10 @@ function meme() {
       clearInterval(id);
       }
       count++;
-      elem.style.top = (yCoord - 8 + Math.random()*500) + 'px';
-      elem.style.left = (xLeft - 8 + Math.random()*500) + 'px';
-      elem2.style.top = (yCoord - 8 + Math.random()*500) + 'px';
-      elem2.style.left = (xLeft - 8 + Math.random()*500) + 'px';
+      elem.style.top = (yCoord - 8 + Math.random()*screen.height) + 'px';
+      elem.style.left = (xLeft - 8 + Math.random()*screen.width) + 'px';
+      elem2.style.top = (yCoord - 8 + Math.random()*screen.height) + 'px';
+      elem2.style.left = (xLeft - 8 + Math.random()*screen.width) + 'px';
   }
 }
 </script>
