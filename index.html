@@ -40,5 +40,8 @@
 	$("img").on("mouseup", function(e) {
       firstTime = 0;
 	});
+	$("img").on("touchstart", function(e) {
+	  document.getElementById("imageObj").style.display = "none";
+	});
   </script>
 </body>
