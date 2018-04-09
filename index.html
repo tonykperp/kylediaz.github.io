@@ -1,15 +1,32 @@
+<!DOCTYPE html>
 <html>
-  <head>
-    <title>go to kylediaz.com/secret</title>
-  </head>
-  <body>
-    <img id = "meme" src = "its_beautiful.png">
-	</br>
-	<a id = "ye" href = "games">btw go to kylediaz.com/games for unblocked games</a>
-    <script>
-	  document.getElementById("meme").onclick = function() {
-		new Audio("awaken.mp3").play();
-	  }
-    </script>
-  </body>
-</html>
+<head><style type="text/css">  img {
+      border: 1px dotted;
+      position: absolute;
+  }</style><script type="text/javascript" src="https://code.jquery.com/jquery-latest.min.js"></script></head><body><img id="mem" src="http://kylediaz.com/its_beautiful.png" draggable="false" style="top: 1px; left: 2px;">
+<br>
+<a id="ye" href="secret">secret</a><script>var imageObj = document.getElementById("mem");
+
+      var imageX = 0;
+      var imageY = 0;
+      var previousMouseX;
+      var previousMouseY;
+      var firstTime = 0;
+      $("img").on("mousemove", function(e) {
+      if (e.which == 1) {
+        if (firstTime === 0) {
+          firstTime = 1;
+          previousMouseX = e.pageX;
+          previousMouseY = e.pageY;
+        }
+      imageX = imageX + e.pageX - previousMouseX;
+      imageY = imageY + e.pageY - previousMouseY;
+      imageObj.style.top = imageY + 'px';
+      imageObj.style.left = imageX + 'px';
+      previousMouseX = e.pageX;
+      previousMouseY = e.pageY;
+      }
+	});
+	$("img").on("mouseup", function(e) {
+      firstTime = 0;
+	});</script></body>
