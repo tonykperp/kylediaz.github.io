@@ -40,8 +40,18 @@
 	$("img").on("mouseup", function(e) {
       firstTime = 0;
 	});
-	$("img").on("touchstart", function(e) {
-	  document.getElementById("imageObj").style.display = "none";
-	});
+	imageObj.addEventListener('touchstart', function(e) {
+      previousMouseX = e.changedTouches[0].pageX;
+      previousMouseY = e.changedTouches[0].pageY;
+    }, false);
+	imageObj.addEventListener('touchmove', function(e){	
+	  console.log(e.changedTouches[0].pageX);
+      imageX = imageX + e.changedTouches[0].pageX - previousMouseX;
+      imageY = imageY + e.changedTouches[0].pageY - previousMouseY;
+      imageObj.style.top = imageY + 'px';
+      imageObj.style.left = imageX + 'px';
+      previousMouseX = e.changedTouches[0].pageX;
+      previousMouseY = e.changedTouches[0].pageY;
+    }, false)
   </script>
 </body>
