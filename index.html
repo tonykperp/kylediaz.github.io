@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>go on PC and move the image around</title>
+<title>Look for the secret ;)</title>
 <style type="text/css">
   img {
     border: 1px dotted;
@@ -45,7 +45,6 @@
       previousMouseY = e.changedTouches[0].pageY;
     }, false);
 	imageObj.addEventListener('touchmove', function(e){	
-	  console.log(e.changedTouches[0].pageX);
       imageX = imageX + e.changedTouches[0].pageX - previousMouseX;
       imageY = imageY + e.changedTouches[0].pageY - previousMouseY;
       imageObj.style.top = imageY + 'px';
