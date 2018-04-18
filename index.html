@@ -1,71 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Look for the secret ;)</title>
-<style type="text/css">
-  img {
-    border: 1px dotted;
-    position: absolute;
-	width: 500px;
-	z-index: 2;
-  }
-  a {
-    position: absolute;
-	z-index: 1;
-  }
-</style>
+<title>Tony K cant do an if statement</title>
 <script type="text/javascript" src="https://code.jquery.com/jquery-latest.min.js"></script>
 </head>
 <body>
-  <h1>NIRMAL CLASS PRESIDENT 2020</h1>
-
-
-  <script>
-    var imageObj = document.getElementById("mem");
-
-    var imageX = 0;
-    var imageY = 0;
-    var previousMouseX;
-    var previousMouseY;
-    var firstTime = 0;
-    $("img").on("mousemove", function(e) {
-      if (e.which == 1) {
-        if (firstTime === 0) {
-          firstTime = 1;
-          previousMouseX = e.pageX;
-          previousMouseY = e.pageY;
-        }
-        imageX = imageX + e.pageX - previousMouseX;
-        imageY = imageY + e.pageY - previousMouseY;
-        imageObj.style.top = imageY + 'px';
-        imageObj.style.left = imageX + 'px';
-        previousMouseX = e.pageX;
-        previousMouseY = e.pageY;
-      }
-	});
-	$("img").on("mouseup", function(e) {
-      firstTime = 0;
-	});
-	imageObj.addEventListener('touchstart', function(e) {
-      previousMouseX = e.changedTouches[0].pageX;
-      previousMouseY = e.changedTouches[0].pageY;
-    }, false);
-	imageObj.addEventListener('touchmove', function(e){	
-      imageX = imageX + e.changedTouches[0].pageX - previousMouseX;
-      imageY = imageY + e.changedTouches[0].pageY - previousMouseY;
-      imageObj.style.top = imageY + 'px';
-      imageObj.style.left = imageX + 'px';
-      previousMouseX = e.changedTouches[0].pageX;
-      previousMouseY = e.changedTouches[0].pageY;
-    }, false);
-	
-	
-	
-	document.getElementById("ye").addEventListener("mouseover", mouseOver);
-	function mouseOver() {
-		document.getElementById("ye").style.top = Math.random() * 1000 + 'px';
-		document.getElementById("ye").style.left = Math.random() * 1000 + 'px';
-	}
-	
-  </script>
+  <h1 id = "img">NIRMAL CLASS PRESIDENT 2020</h1>
 </body>
