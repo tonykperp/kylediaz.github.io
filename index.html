@@ -3,61 +3,14 @@
 <head>
 <title>Look for the secret ;)</title>
 <style type="text/css">
-  img {
-    border: 1px dotted;
-    position: absolute;
-	width: 500px;
-	z-index: 2;
-  }
-  a {
-    position: absolute;
-	z-index: 1;
-  }
 </style>
 <script type="text/javascript" src="https://code.jquery.com/jquery-latest.min.js"></script>
 </head>
 <body>
-  <img id="mem" src="https://media1.giphy.com/media/A4R8sdUG7G9TG/giphy.gif" draggable="false" style="top: 1px; left: 2px;">
-  <br>
-  <a id="ye" href="https://www.reddit.com/r/kylediaz">secret</a>
+  <h1>Who did this?! 😂😂</h1>
+  <a href = "https://www.reddit.com/r/kylediaz">
+    <img id="mem" src="https://media1.giphy.com/media/A4R8sdUG7G9TG/giphy.gif" draggable="false">
+  </a>
   <script>
-    var imageObj = document.getElementById("mem");
-
-    var imageX = 0;
-    var imageY = 0;
-    var previousMouseX;
-    var previousMouseY;
-    var firstTime = 0;
-    $("img").on("mousemove", function(e) {
-      if (e.which == 1) {
-        if (firstTime === 0) {
-          firstTime = 1;
-          previousMouseX = e.pageX;
-          previousMouseY = e.pageY;
-        }
-        imageX = imageX + e.pageX - previousMouseX;
-        imageY = imageY + e.pageY - previousMouseY;
-        imageObj.style.top = imageY + 'px';
-        imageObj.style.left = imageX + 'px';
-        previousMouseX = e.pageX;
-        previousMouseY = e.pageY;
-      }
-	});
-	$("img").on("mouseup", function(e) {
-      firstTime = 0;
-	});
-	imageObj.addEventListener('touchstart', function(e) {
-      previousMouseX = e.changedTouches[0].pageX;
-      previousMouseY = e.changedTouches[0].pageY;
-    }, false);
-	imageObj.addEventListener('touchmove', function(e){	
-      imageX = imageX + e.changedTouches[0].pageX - previousMouseX;
-      imageY = imageY + e.changedTouches[0].pageY - previousMouseY;
-      imageObj.style.top = imageY + 'px';
-      imageObj.style.left = imageX + 'px';
-      previousMouseX = e.changedTouches[0].pageX;
-      previousMouseY = e.changedTouches[0].pageY;
-    }, false);
-	
   </script>
 </body>
