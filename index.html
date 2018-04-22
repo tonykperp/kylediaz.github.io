@@ -88,9 +88,10 @@ ___.   .__
     <div id="badguy" style="left: 0px; top: 0px;"></div>
   </div>
 
-<script>function blockPhones() {
+<script>
+function blockPhones() {
   if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-    document.getElementById("REEEE").innerHTML = "USE PC REEEEE";
+    alert("This doesnt work with phones, so go away");
   }
 }
 var movementSpeed = 25;
@@ -121,6 +122,10 @@ function startGame() {
     }
     document.getElementById("badguy").style.left = badguyx + 'px';
     document.getElementById("badguy").style.top = badguyy + 'px';
+	if (playerx == badguyx && playery == badguyy) {
+	  document.getElementById("REEEE").innerHTML = "wow how bad do you have to be to die from that red thing. I bet you didnt even know it was bad, but everyone knows red things are bad. Im dissapointed in you. Tell Kyle Diaz you died to that *bad* red thing so he can laugh at you while he dances in a little jester outfit";
+	  clearInterval(id);
+	}
   }
 }
 addEventListener("keypress", keyboardManager);
@@ -145,4 +150,6 @@ function keyboardManager(event) {
     playery += movementSpeed;
     player.style.top = playery + 'px';
   }
-}</script></body>
+}
+</script>
+</body>
