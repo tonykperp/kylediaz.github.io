@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+<head>
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-117924862-1"></script>
 <script>
@@ -10,16 +11,138 @@
 
   gtag('config', 'UA-117924862-1');
 </script>
-<title>click the image >:(</title>
-<style type="text/css">
-</style>
-<script type="text/javascript" src="https://code.jquery.com/jquery-latest.min.js"></script>
+<!--
+ _______        ___.   .__.__    
+ \      \   ____\_ |__ |__|  |   
+ /   |   \_/ __ \| __ \|  |  |   
+/    |    \  ___/| \_\ \  |  |__ 
+\____|__  /\___  >___  /__|____/ 
+        \/     \/    \/          
+.__                              
+|__| ______                      
+|  |/  ___/                      
+|  |\___ \                       
+|__/____  >                      
+        \/                       
+                                 
+_____                            
+\__  \                           
+ / __ \_                         
+(____  /                         
+     \/                          
+___.   .__                       
+\_ |__ |__| ____                 
+ | __ \|  |/ ___\                
+ | \_\ \  / /_/  >               
+ |___  /__\___  /                
+     \/  /_____/                 
+                                 
+   _________  ___.__.            
+  / ___\__  \<   |  |            
+ / /_/  > __ \\___  |            
+ \___  (____  / ____|            
+/_____/     \/\/                 
+</!-->
+<style type="text/css">#background {
+  width: 500px;
+  height: 500px;
+  position: absolute;
+  background: gray;
+}
+#playbutton {
+  width: 300px;
+  height: 50px;
+  position: absolute;
+  top: 200px;
+  left:  100px;
+  background: green;
+}
+#player {
+  display: none;
+  width: 25px;
+  height: 25px;
+  position: absolute;
+  background: blue;
+}
+#badguy {
+  display: none;
+  width: 25px;
+  height: 25px;
+  left: 400px;
+  top: 400px;
+  position: absolute;
+  background: red;
+}</style>
+
+
+<script type="text/javascript"></script>
+<title>If you cant find the secret, you arent looking hard enough</title>
 </head>
-<body>
-  <h1>Who did this?! 😂😂</h1>
-  <a href = "https://www.reddit.com/r/kylediaz">
-    <img id="mem" src="why_would_you_download_this.jpg" draggable="false">
-  </a>
-  <script>
-  </script>
-</body>
+<body onload="blockPhones()">
+  <a id="REEEE"></a>
+  <div id="background">
+    <div id="playbutton" onclick="startGame()">
+      <h1>play game</h1>
+    </div>
+    <div id="player"></div>
+    <div id="badguy" style="left: 0px; top: 0px;"></div>
+  </div>
+
+<script>function blockPhones() {
+  if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+    document.getElementById("REEEE").innerHTML = "USE PC REEEEE";
+  }
+}
+var movementSpeed = 25;
+var playerx = 0;
+var playery = 0;
+var player = document.getElementById("player");
+var badguyx = 400;
+var badguyy = 400;
+
+var gameIsRunning = false;
+function startGame() {
+  document.getElementById("playbutton").style.display = "none";
+  player.style.display = "block";
+  document.getElementById("badguy").style.display = "block";
+  gameIsRunning = true;
+  
+  var id = setInterval(frame, 500);
+  function frame() {
+    if (playerx > badguyx) {
+      badguyx += movementSpeed;
+    } else {
+      badguyx -= movementSpeed;
+    }
+    if (playery > badguyy) {
+      badguyy += movementSpeed;
+    } else {
+      badguyy -= movementSpeed;
+    }
+    document.getElementById("badguy").style.left = badguyx + 'px';
+    document.getElementById("badguy").style.top = badguyy + 'px';
+  }
+}
+addEventListener("keypress", keyboardManager);
+function keyboardManager(event) {
+  if (!gameIsRunning)
+    return;
+  var LEFT = 97;
+  var RIGHT = 100;
+  var UP = 119;
+  var DOWN = 115;
+  var key = event.keyCode;
+  if (key == LEFT && playerx !== 0) {
+    playerx -= movementSpeed;
+    player.style.left = playerx + 'px';
+  } else if (key == RIGHT && playerx != 475) {
+    playerx += movementSpeed;
+    player.style.left = playerx + 'px';
+  } else if (key == UP && playery !== 0) {
+    playery -= movementSpeed;
+    player.style.top = playery + 'px';
+  } else if (key == DOWN && playery != 475) {
+    playery += movementSpeed;
+    player.style.top = playery + 'px';
+  }
+}</script></body>
