@@ -108,7 +108,7 @@ function startGame() {
   document.getElementById("badguy").style.display = "block";
   gameIsRunning = true;
   
-  var id = setInterval(frame, 1000);
+  var id = setInterval(frame, 250);
   function frame() {
     if (playerx > badguyx) {
       badguyx += movementSpeed;
