@@ -78,10 +78,9 @@ ___.   .__
 <title>If you cant find the secret, you arent looking hard enough</title>
 </head>
 <body onload="onLoad()" id = "body">
-  <a id="REEEE"></a>
   <div id="background">
     <div id="playbutton" onclick="startGame()">
-      <h1>play game and use WASD >:(</h1>
+      <h1 id = "playgamelabel">play game</h1>
     </div>
     <div id="player"></div>
     <div id="badguy" style="left: 0px; top: 0px;"></div>
@@ -91,10 +90,14 @@ ___.   .__
   <h4>Day 2: ????</h4>
   <p>if you find the secret, you get x (4sin^3(x) + 2sin^2x - 2sinx - 1 = 0) Manx pounds</p>
 
+  <p>if you think the game is stupid: 1. fuck you :( 2. here is some stupid meme to make you happy</p>
+  <img src = "https://i.redd.it/fm7vytwnwmt01.jpg" draggable = "false"></img>
 <script>
 function onLoad() {
   if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
     alert("this game works with phones now, so dont go away and please stay :)))))");
+  } else {
+   document.getElementById("playgamelabel").innerHTML = "play game and use WASD >:(";
   }
 }
 var movementSpeed = 25;
@@ -126,7 +129,14 @@ function startGame() {
     document.getElementById("badguy").style.left = badguyx + 'px';
     document.getElementById("badguy").style.top = badguyy + 'px';
 	if (playerx == badguyx && playery == badguyy) {
-	  document.getElementById("REEEE").innerHTML = "wow how bad do you have to be to die from that red thing. Tell Kyle Diaz you died so he can laugh at you";
+	  document.getElementById("playbutton").style.display = "block";
+	  document.getElementById("playgamelabel").innerHTML = "wow how bad do you have to be to die from that red thing. Tell Kyle Diaz you died so he can laugh at you";
+	  playerx = 0;
+	  playery = 0;
+	  player.style.top = playery + 'px';
+	  player.style.left = playerx + 'px';
+	  badguyx = 400;
+	  badguyy = 400;
 	  clearInterval(id);
 	  gameIsRunning = false;
 	}
@@ -135,37 +145,40 @@ function startGame() {
 
 addEventListener("keypress", keyboardManager);
 function keyboardManager(event) {
-  document.getElementById("REEEE").innerHTML = event.key;
   if (!gameIsRunning)
     return;
   var key = event.key;
   if ((key == 'a' || key == 'A') && playerx !== 0) {
     playerx -= movementSpeed;
-    player.style.left = playerx + 'px';
   } else if ((key == 'd' || key == 'D') && playerx != 475) {
     playerx += movementSpeed;
-    player.style.left = playerx + 'px';
   } else if ((key == 'w' || key == 'W') && playery !== 0) {
     playery -= movementSpeed;
-    player.style.top = playery + 'px';
   } else if ((key == 's' || key == 'S') && playery != 475) {
     playery += movementSpeed;
-    player.style.top = playery + 'px';
   }
+  player.style.left = playerx + 'px';
+  player.style.top = playery + 'px';
 }
 
 if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
   var touchid = setInterval(move, 100);
 }
-var direction = "";
+var directionH = "";
+var directionV = "";
 function move() {
-  if (direction == "left" && playerx != 0)
+  if (!gameIsRunning) {
+	directionH = "";
+	directionV = "";
+	return;
+  }
+  if (directionH == "left" && playerx != 0)
     playerx -= movementSpeed;
-  else if (direction == "right" && playerx != 475)
+  else if (directionH == "right" && playerx != 475)
     playerx += movementSpeed;
-  else if (direction == "up" && playery != 0)
+  if (directionV == "up" && playery != 0)
     playery -= movementSpeed;
-  else if (direction == "down" && playery != 475)
+  else if (directionV == "down" && playery != 475)
     playery += movementSpeed;
   player.style.top = playery + 'px';
   player.style.left = playerx + 'px';
@@ -191,24 +204,23 @@ gestureZone.addEventListener('touchend', function(event) {
 
 function handleGesture() {
     if (touchendX < touchstartX) {
-        direction = "left";
+        directionH = "left";
     }
-    
     if (touchendX > touchstartX) {
-        direction = "right";
+        directionH = "right";
     }
-    
     if (touchendY < touchstartY) {
-        direction = "up";
+        directionV = "up";
     }
-    
     if (touchendY > touchstartY) {
-       direction = "down";
+       directionV = "down";
     }
-    
-    if (touchendY === touchstartY) {
-       direction = "";
-    }
+	var deltaX = Math.abs(touchendX - touchstartX);
+	var deltaY = Math.abs(touchendY - touchstartY);
+	if (deltaX - deltaY >= 75)
+	  directionV = "";
+	else if (deltaY - deltaX >= 75)
+	  directionH = "";
 }
 </script>
 </body>
