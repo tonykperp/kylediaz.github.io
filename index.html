@@ -111,7 +111,7 @@ function startGame() {
   player.style.display = "block";
   document.getElementById("badguy").style.display = "block";
   
-  var id = setInterval(frame, 500);
+  var id = setInterval(frame, 250);
   function frame() {
     if (playerx > badguyx) {
       badguyx += movementSpeed;
@@ -128,6 +128,7 @@ function startGame() {
 	if (playerx == badguyx && playery == badguyy) {
 	  document.getElementById("REEEE").innerHTML = "wow how bad do you have to be to die from that red thing. Tell Kyle Diaz you died so he can laugh at you";
 	  clearInterval(id);
+	  gameIsRunning = false;
 	}
   }
 }
