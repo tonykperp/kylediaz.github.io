@@ -47,6 +47,7 @@ ___.   .__
 #background {
   width: 500px;
   height: 500px;
+  position: relative;
   background: gray;
 }
 #playbutton {
@@ -73,25 +74,33 @@ ___.   .__
   position: relative;
   background: red;
 }
+#score {
+  position: absolute;
+}
 </style>
 <script type="text/javascript"></script>
 <title>If you cant find the secret, you arent looking hard enough</title>
 </head>
 <body onload="onLoad()" id = "body">
   <div id="background">
+    <h4 id = "score"></h4>
     <div id="playbutton" onclick="startGame()">
       <h1 id = "playgamelabel">play game</h1>
     </div>
     <div id="player"></div>
     <div id="badguy" style="left: 0px; top: 0px;"></div>
   </div>
-  </h4>Day 1: no one found the secret</h4>
+  <h4>Day 1: no one found the secret</h4>
 	<p>A grey background. You can move the blue thing with wasd and the red thing chases you. If it catches you, the program taunts you in a way that kinda hurts :(</p>
-  <h4>Day 2: ????</h4>
+  <h4>Day 2: no one found the secret</h4>
+    <p>First off: the red guy going out of bounds is not the secret >:(. Second off: I forgot what I changed since last time because it was so long ago. </p>
+  <h4>Day 3: ??????</h4>
+  
+  <p>btw, when I say day, I dont mean day in a literal sense. I mean day like how some people believe in the bible, the world was built in 6 figurative days</p>
   <p>if you find the secret, you get x (4sin^3(x) + 2sin^2x - 2sinx - 1 = 0) Manx pounds</p>
 
   <p>if you think the game is stupid: 1. fuck you :( 2. here is some stupid meme to make you happy</p>
-  <img src = "https://i.redd.it/fm7vytwnwmt01.jpg" draggable = "false"></img>
+  <img src = "clock.jpg" draggable = "false"></img>
 <script>
 function onLoad() {
   if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
@@ -114,8 +123,15 @@ function startGame() {
   player.style.display = "block";
   document.getElementById("badguy").style.display = "block";
   
+  var score = 0;
   var id = setInterval(frame, 250);
   function frame() {
+    document.getElementById("score").innerHTML = "score: " + score;
+	score++;
+	if (score == 300) {
+	  alert("you have no life");
+	}
+	
     if (playerx > badguyx) {
       badguyx += movementSpeed;
     } else if (playerx < badguyx) {
@@ -126,6 +142,7 @@ function startGame() {
     } else if (playery < badguyy) {
       badguyy -= movementSpeed;
     }
+	
     document.getElementById("badguy").style.left = badguyx + 'px';
     document.getElementById("badguy").style.top = badguyy + 'px';
 	if (playerx == badguyx && playery == badguyy) {
