@@ -124,7 +124,7 @@ function startGame() {
   document.getElementById("badguy").style.display = "block";
   
   var score = 0;
-  var id = setInterval(frame, 250);
+  var id = setInterval(frame, 50);
   function frame() {
     document.getElementById("score").innerHTML = "score: " + score;
 	score++;
