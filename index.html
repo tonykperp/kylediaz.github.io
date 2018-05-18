@@ -2,17 +2,456 @@
 <html>
   <head>
     <!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=UA-117924862-1"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date()); 
-  gtag('config', 'UA-117924862-1');
+	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-117924862-1"></script>
+	<script>
+	  window.dataLayer = window.dataLayer || [];
+	  function gtag(){dataLayer.push(arguments);}
+	  gtag('js', new Date()); 
+	  gtag('config', 'UA-117924862-1');
+	</script>
+	<script>
+	var js = require('../js');
+
+var heap = require('heap.js');
+var assert = require('assert');
+
+function Runtime(options) {
+  this.platform = new js.platform.x64.X64(this);
+  this.heap = heap.create({
+    callWrapper: this.platform.callWrapper
+  });
+  this.compiler = new js.Compiler(this, options);
+  this.platform.heap = this.heap;
+  this.platform.compiler = this.compiler;
+
+  this.tramp = {
+    map: {},
+    list: [],
+    stub: new this.platform.Stub('runtime', 0, ''),
+    refs: null
+  };
+  this.persistent = this.heap.createScope();
+  this.persistent.type = 'persistent';
+  this.heap.globals.leave();
+  this.persistent.enter();
+  this.heap.globals.enter();
+
+  this.initTramp();
+}
+module.exports = Runtime;
+
+Runtime.create = function create(options) {
+  return new Runtime(options);
+};
+
+Runtime.prototype.compile = function compile(code) {
+  return this.compiler.compile(code);
+};
+
+Runtime.prototype.initTramp = function initTramp() {
+  this.persistent.wrap(function() {
+    this.tramp.stub.fn = this.compiler.masmCtx(function(ctx) {
+      this.platform.genRuntimeTramp(ctx.masm);
+
+      var res = ctx.getFunction();
+      this.tramp.refs = ctx.references;
+      return res;
+    }, {}, this);
+
+    this.platform.registerStub(this.tramp.stub);
+  }, this);
+
+  this.initObject();
+  this.initUtils();
+  this.initType();
+  this.initBinary();
+};
+
+Runtime.prototype.initObject = function initObject() {
+  this.registerTramp('getPropertySlot',
+                     function getPropertySlot(ic, obj, prop, update) {
+    ic = this.platform.getIC('getPropertySlot', ic);
+
+    var updateVal = update.value();
+    var before;
+    var after;
+
+    if (updateVal)
+      before = obj.map();
+    var res = obj.getPropertySlot(prop, update.value());
+    if (updateVal)
+      after = obj.map();
+
+    // No match, always runtime
+    if (res.isHole())
+      return res;
+
+    // Cache only if the map hasn't changed
+    if (!updateVal || before.isSame(after))
+      ic.miss(before || obj.map(), prop, res);
+
+    return res;
+  });
+
+  this.registerTramp('loadProperty', function loadProperty(obj, prop) {
+    return obj.get(prop);
+  });
+
+  this.registerTramp('storeProperty', function storeProperty(obj, prop, value) {
+    obj.set(prop, value);
+    return this.heap.undef;
+  });
+};
+
+Runtime.prototype.initUtils = function initUtils() {
+  this.registerTramp('log', function log(value) {
+    console.log(value.toJSON());
+  });
+};
+
+Runtime.prototype.initType = function initType() {
+  var types = [ 'boolean' ];
+
+  types.forEach(function(type) {
+    var map = this.heap.maps[type];
+
+    this.registerTramp('coerce/boolean', function coerceBoolean(val) {
+      return val.coerceTo(map);
+    });
+  }, this);
+};
+
+Runtime.prototype.initBinary = function initBinary() {
+  var ops = [ '+', '-', '*', '/', '%' ];
+
+  ops.forEach(function(op) {
+    this.registerTramp('binary/' + op, function binary(left, right) {
+      if (op === '+')
+        return left.add(right);
+      else if (op === '-')
+        return left.sub(right);
+      else if (op === '*')
+        return left.mul(right);
+      else if (op === '/')
+        return left.div(right);
+      else if (op === '%')
+        return left.mod(right);
+      else
+        throw new Error('Binary runtime tramp not implemented for: ' + op);
+    });
+  }, this);
+};
+
+Runtime.prototype.runTramp = function runTramp(id) {
+  var args = Array.prototype.slice.call(arguments, 1);
+  var index = heap.binding.readTagged(id, 0);
+  return this.tramp.list[index].apply(this, args);
+};
+
+Runtime.prototype.getTramp = function getTramp(name) {
+  assert(this.tramp.map[name] !== undefined,
+         'Trampoline ' + name + ' not found');
+  return this.tramp.map[name];
+};
+
+Runtime.prototype.registerTramp = function registerTramp(name, fn) {
+  var self = this;
+  function trampWrap() {
+    var args = arguments;
+    return self.heap.scope(function() {
+      // Wrap every argument
+      args = Array.prototype.slice.call(args, 0, fn.length).map(function(arg) {
+        return this.heap.wrapPtr(arg).cast();
+      }, this);
+      var res = fn.apply(this, args);
+
+      // Return pointer, not a handle
+      if (res)
+        return res.ptr();
+    }, self);
+  }
+
+  var res = this.tramp.list.push(trampWrap) - 1;
+  this.tramp.map[name] = res;
+  return res;
+};
 </script>
+	<style>
+	  img {
+	    display: block;
+		margin-left: auto;
+		margin-right: auto;
+		width: 90%;
+	  }
+	</style>
 </head>
 <body>
-  <h1 id = "loser">DANIEL</h1>
+  <img src = "despacito.png"></img>
 <script>
+var js = require('../js');
+
+var assert = require('assert');
+var esprima = require('esprima');
+var cfgjs = require('cfg.js');
+var ssa = require('ssa.js');
+var linearscan = require('linearscan');
+var jit = require('jit.js');
+var ir = require('cfg-ir');
+var disasm = require('disasm');
+var util = require('util');
+
+function Compiler(runtime, options) {
+  this.runtime = runtime;
+  this.heap = this.runtime.heap;
+  this.platform = this.runtime.platform;
+  this.options = options || {};
+  this.linearscan = linearscan.create({
+    registers: this.platform.registers,
+    instructions: this.platform.instructions
+  });
+  this.blocks = null;
+  this.ctx = null;
+
+  this.stubReferences = [];
+}
+module.exports = Compiler;
+
+Compiler.prototype.compile = function compile(source) {
+  var ast = esprima.parse(source);
+
+  return this.heap.scope(function() {
+    var res;
+
+    this.blocks = {};
+
+    cfgjs.construct(ast).slice().reverse().forEach(function(cfg) {
+      res = this.compileCFG(cfg);
+      this.blocks[cfg[0].id] = {
+        cfg: cfg,
+        fn: res
+      };
+    }, this);
+
+    this.blocks = null;
+
+    return res;
+  }, this);
+};
+
+Compiler.prototype.compileCFG = function compileCFG(cfg, options) {
+  options = options || {};
+
+  if (typeof cfg === 'function') {
+    cfg = cfg.toString().replace(/^function[^{]*{\/\*|\*\/}$/g, '');
+    cfg = ir.parse(cfg, options.locals || {});
+  }
+  cfg = new cfgjs.Graph(ssa.run(cfg)).construct();
+
+  this.traceIR('ssa', 'SSA', cfg);
+
+  this.optimize(cfg);
+
+  this.traceIR('opt', 'OPTIMIZED SSA', cfg);
+
+  this.platform.compiler = this;
+  this.platform.optimize(cfg);
+
+  this.traceIR('platformOpt', 'PLATFORM OPT SSA', cfg);
+
+  // Allocate registers
+  var blocks = this.linearscan.run(cfgjs.Graph.strip(cfg));
+
+  // Add `proc` to non-ICs
+  if (options.type !== 'ic') {
+    blocks[0].instructions.unshift({
+      id: null,
+      type: 'proc',
+      inputs: []
+    });
+  }
+
+  this.traceIR('linearscan', 'LINEARSCAN', blocks);
+
+  var out = this.generate(blocks, this.linearscan.spillCount(), options);
+  this.traceAsm(blocks, out);
+  return out;
+};
+
+Compiler.prototype.isTracing = function isTracing(what) {
+  if (!this.options.trace)
+    return false;
+
+  if (this.options.trace.indexOf(what) === -1 && this.options.trace !== 'all')
+    return false;
+
+  return true;
+};
+
+Compiler.prototype.traceIR = function traceIR(what, desc, ssa) {
+  if (!this.isTracing(what))
+    return;
+
+  console.error('----- ' + desc + ' -----');
+  var cfg = ssa;
+  if (what !== 'linearscan')
+    cfg = cfgjs.Graph.strip(cfg);
+
+  console.error(ir.stringify(cfg));
+  console.error(ir.dotify(cfg));
+  console.error('----- ' + desc + ' END -----');
+};
+
+Compiler.prototype.traceAsm = function traceAsm(blocks, fn) {
+  if (!this.isTracing('asm'))
+    return;
+
+  var asm = disasm.create({ swallow: true }).disasm(fn.code().code());
+
+  // Clone blocks
+  blocks = blocks.map(function(block) {
+    return {
+      id: block.id,
+      successors: block.successors,
+      instructions: block.instructions.slice()
+    };
+  });
+
+  var last = asm.length - 1;
+  for (var i = blocks.length - 1; i >= 0; i--) {
+    var block = blocks[i];
+    for (var j = block.instructions.length - 1; j >= 0; j--) {
+      var instr = block.instructions[j];
+      for (; last >= 0 && asm[last].offset >= instr.masmOffset; last--) {
+        block.instructions.splice(j + 1, 0, {
+          id: null,
+          type: '; ' + disasm.stringifyInstr(asm[last]),
+          inputs: []
+        });
+      }
+    }
+  }
+  console.error('----- ASM -----');
+  console.error(ir.stringify(blocks));
+  console.error('----- ASM END -----');
+};
+
+Compiler.prototype.optimize = function optimize(ssa) {
+};
+
+Compiler.prototype.masmCtx = function masmCtx(body, options, self) {
+  var oldCtx = this.ctx;
+  assert(this.ctx === this.platform.ctx);
+
+  this.ctx = new Context(this, options);
+  this.platform.ctx = this.ctx;
+
+  var res = body.call(self, this.ctx);
+
+  this.ctx = oldCtx;
+  this.platform.ctx = oldCtx;
+
+  return res;
+};
+
+Compiler.prototype.generate = function generate(blocks, spillCount, options) {
+  var self = this;
+
+  return this.masmCtx(function() {
+    this.ctx.spillCount = spillCount;
+
+    body();
+
+    function body() {
+      if (self.options.brk)
+        self.ctx.masm.int3();
+      for (var i = 0; i < blocks.length; i++)
+        self.genBlock(blocks[i], blocks[i + 1]);
+    }
+
+    return this.ctx.getFunction();
+  }, options, this);
+};
+
+Compiler.prototype.genBlock = function genBlock(block, next) {
+  this.ctx.masm.bind(this.ctx.blockLabel(block.id));
+
+  for (var i = 0; i < block.instructions.length; i++)
+    this.platform.genInstruction(block.instructions[i]);
+
+  var nextLabel;
+  if (next)
+    nextLabel = this.ctx.blockLabel(next.id);
+
+  var succLabels = block.successors.map(function(succ) {
+    return this.ctx.blockLabel(succ);
+  }, this);
+
+  this.platform.genGoto(succLabels, nextLabel);
+};
+
+Compiler.prototype.compileStubs = function compileStubs(body, options) {
+  var ctx = new Context(this, options);
+
+  var oldCtx = this.ctx;
+  this.ctx = ctx;
+  body.call(ctx.masm);
+  this.ctx = oldCtx;
+
+  var code = ctx.getCode();
+  this.stubReferences.push(ctx.references);
+
+  return code.code();
+};
+
+function Context(compiler, options) {
+  this.compiler = compiler;
+  this.heap = this.compiler.heap;
+  this.options = options || {};
+
+  this.block = null;
+  this.spillCount = null;
+
+  this.masm = jit.create(util._extend({
+    stubs: this.compiler.platform.stubs,
+    helpers: this.compiler.platform.helpers
+  }, options || {}));
+  this.masm.ctx = this;
+
+  this.references = null;
+  this.offsets = [];
+  this.weakOffsets = [];
+  this.blocks = {};
+}
+
+Context.prototype.blockLabel = function blockLabel(block) {
+  if (!this.blocks[block])
+    this.blocks[block] = this.masm.label();
+
+  return this.blocks[block];
+};
+
+Context.prototype.getCode = function getCode() {
+  var info = this.masm.compile();
+
+  var code = this.heap.allocCode(info.buffer, this.offsets, this.weakOffsets);
+  info.resolve(code.code());
+
+  this.references = info.references;
+
+  return code;
+};
+
+Context.prototype.getFunction = function getFunction() {
+  return this.heap.allocFunction(this.getCode());
+};
+
+Context.prototype.addReference = function addReference(offset) {
+  this.offsets.push(offset - this.compiler.platform.ptrSize);
+};
+
+Context.prototype.addWeakReference = function addWeakReference(offset) {
+  this.weakOffsets.push(offset - this.compiler.platform.ptrSize);
+};
 </script>
 </body>
 </html>
