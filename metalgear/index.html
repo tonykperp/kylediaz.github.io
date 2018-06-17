@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<body onLoad = "launch()">
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-117924862-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){
+            dataLayer.push(arguments);
+        }
+        gtag('js', new Date());
+
+        gtag('config', 'UA-117924862-1');
+    </script>
+    
+    <style>
+        canvas {
+            background-color: #f1f1f1;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+
+    <canvas id = "game">
+        
+    </canvas>
+    
+    <script>
+        function launch() {
+            alert("if you have a scroll bar, press ctrl+shift+b to hide bookmarks bar");
+            var scale = Math.min(game.clientWidth / camera.width, game.clientWidth / camera.height);
+            context.scale(scale, scale);
+            //paddingLeft = (this.getWidth() - camera.dimension.width * scale) / 2 / scale;
+            //paddingTop = (this.getHeight() - camera.dimension.height * scale) / 2 / scale;
+            reset();
+            startGame();
+        }
+        
+        var game = document.getElementById("game");
+        var context = game.getContext("2d");
+        
+        var gameIsRunning = false;
+        
+        /**
+         * The aspect ratio of the game may not always fit the aspect ratio of the intended
+         * camera, so the game will translate the top left corner by theses values to "center"
+         * the canvas on the screen.
+        */
+        var topPadding;
+        var leftPadding;
+        var scale;
+        
+        var player;
+        var enemy;
+        
+        function reset() {
+            player = new Entity(0, 0);
+            enemy = new Entity(16, 16);
+        }
+        
+        var id  = setInterval(gameLoop, 1000 / 60);
+        function startGame() {
+            id = setInterval(gameLoop, 1000 / 60)
+            gameIsRunning = true;
+        }
+        
+        function gameLoop() {
+            context.clearRect(0, 0, game.width, game.height);
+            context.fillStyle = "red";
+            context.fillRect(player.x, player.y, player.width, player.height);
+            player.x += 1;
+        }
+        
+        function stopGame() {
+            clearInterval(id);
+            gameIsRunning = false;
+        }
+        
+        
+        var camera = {
+            width: 128,
+            height: 128
+        };
+        
+        function Entity(x, y) {
+            this.x = x;
+            this.y = y;
+            this.width = 4;
+            this.height = 4;
+            this.intersect = function(otherobj) {
+                var myleft = this.x;
+                var myright = this.x + (this.width);
+                var mytop = this.y;
+                var mybottom = this.y + (this.height);
+                var otherleft = otherobj.x;
+                var otherright = otherobj.x + (otherobj.width);
+                var othertop = otherobj.y;
+                var otherbottom = otherobj.y + (otherobj.height);
+                var crash = true;
+                if ((mybottom < othertop) ||
+                        (mytop > otherbottom) ||
+                        (myright < otherleft) ||
+                        (myleft > otherright)) {
+                    crash = false;
+                }
+                return crash;
+            }
+        }
+        
+        addEventListener("keypress", keyboardManager);
+        function keyboardManager(event) {
+            if (!gameIsRunning)
+                return;
+            var key = event.key;
+            if ((key == 'a' || key == 'A') && playerx !== 0) {
+                playerx -= movementSpeed;
+            } else if ((key == 'd' || key == 'D') && playerx != 475) {
+                playerx += movementSpeed;
+            } else if ((key == 'w' || key == 'W') && playery !== 0) {
+                playery -= movementSpeed;
+            } else if ((key == 's' || key == 'S') && playery != 475) {
+                playery += movementSpeed;
+            }
+            player.style.left = playerx + 'px';
+            player.style.top = playery + 'px';
+        }
+        
+    </script>
+</body>
+</html>
