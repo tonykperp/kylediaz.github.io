@@ -27,11 +27,13 @@
     
     <script>
         function launch() {
-            alert("if you have a scroll bar, press ctrl+shift+b to hide bookmarks bar");
+            alert("if you have a scroll bar, press ctrl+shift+b to hide bookmarks bar. If you're on mobile, go away. This doesnt work with mobile because i̶t̶'̶s̶ ̶t̶o̶o̶ ̶h̶a̶r̶d̶  mobile gaming is stupid");
             var scale = Math.min(game.clientWidth / camera.width, game.clientWidth / camera.height);
+            
             context.scale(scale, scale);
-            //paddingLeft = (this.getWidth() - camera.dimension.width * scale) / 2 / scale;
-            //paddingTop = (this.getHeight() - camera.dimension.height * scale) / 2 / scale;
+            paddingLeft = (game.clientWidth - camera.width * scale) / 2 / scale;
+            paddingTop = (game.clientHeight - camera.height * scale) / 2 / scale;
+            //context.translate(paddingLeft, paddingTop);
             reset();
             startGame();
         }
@@ -51,11 +53,12 @@
         var scale;
         
         var player;
-        var enemy;
+        var enemyDirectory = [];
         
         function reset() {
             player = new Entity(0, 0);
             enemy = new Entity(16, 16);
+            enemyDirectory.push(enemy);
         }
         
         var id  = setInterval(gameLoop, 1000 / 60);
@@ -68,7 +71,7 @@
             context.clearRect(0, 0, game.width, game.height);
             context.fillStyle = "red";
             context.fillRect(player.x, player.y, player.width, player.height);
-            player.x += 1;
+            player.x += .1;
         }
         
         function stopGame() {
@@ -112,17 +115,15 @@
             if (!gameIsRunning)
                 return;
             var key = event.key;
-            if ((key == 'a' || key == 'A') && playerx !== 0) {
-                playerx -= movementSpeed;
-            } else if ((key == 'd' || key == 'D') && playerx != 475) {
-                playerx += movementSpeed;
-            } else if ((key == 'w' || key == 'W') && playery !== 0) {
-                playery -= movementSpeed;
-            } else if ((key == 's' || key == 'S') && playery != 475) {
-                playery += movementSpeed;
+            if (key == 'a' || key == 'A') {
+                
+            } else if (key == 'd' || key == 'D') {
+                
+            } else if (key == 'w' || key == 'W') {
+                
+            } else if (key == 's' || key == 'S') {
+                
             }
-            player.style.left = playerx + 'px';
-            player.style.top = playery + 'px';
         }
         
     </script>
