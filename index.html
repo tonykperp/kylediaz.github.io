@@ -12,64 +12,56 @@
 
         gtag('config', 'UA-117924862-1');
     </script>
+    
+    <style>
+        canvas {
+            background-color: #f1f1f1;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+    <canvas id = "main" onLoad = "launch"></canvas>
     <script>
-        function damn() {
-            alert("If this website HAD php, your computer would have told me you pressed the button. But my website doesnt have PHP :(. Do me a favor and tell me you pressed it");
+        var main = document.getElementById("main");
+        main.addEventListener("click", click);
+        var context = main.getContext("2d");
+        context.imageSmoothingEnabled = true;
+        
+        var focus = {
+            x: main.width / 2,
+            y: main.height / 2
+        }
+        var planet = {
+            x: main.width / 4   ,
+            y: main.height / 2,
+            direction: "clockwise"
+        }
+        
+        var distance = Math.sqrt((focus.x - planet.x)*(focus.x - planet.x) + (focus.y - planet.y)*(focus.y - planet.y));
+        var angle = 0;
+        
+        function updateFocus(x, y) {
+            console.log(x, y);
+            focus.x = x;
+            focus.y = y;
+            //distance = Math.sqrt((focus.x - planet.x)*(focus.x - planet.x) + (focus.y - planet.y)*(focus.y - planet.y));
+            console.log(distance);
+        }
+        
+        function click(event) {
+            //updateFocus(event.clientX, event.clientY);
+        }
+        
+        var id = setInterval(tick, 1000 / 60);
+        
+        function tick() {
+            context.clearRect(0, 0, main.width, main.height);
+            planet.x = focus.x + distance * Math.cos(angle);
+            planet.y = focus.y + distance * Math.sin(angle);
+            angle += 30 / 1000;
+            context.fillStyle = "red";
+            context.fillRect(planet.x, planet.y, 10, 10);
         }
     </script>
-<canvas id="myCanvas" width="800" height="800"></canvas>
-<script>
-var creal = -.8
-var cimag = .156;
-var canvas = document.getElementById('myCanvas');
-var context = canvas.getContext('2d');
-var frame = 0;
- 
-var pallette=[]; //an array that stores the RGB combinations
- 
-function julia()
-{
-        for(y=0;y<200;y++)
-                {
-                for(x=0;x<200;x++)
-                        {
-                        var cx=-2+x/50;
-                        var cy=-2+y/50;
-                        var i = 0;
- 
-                        do
-                                {
-                                xt=cx*cx-cy*cy+creal;
-                                cy=2*cx*cy+cimag;
-                                cx=xt;
-                                i++;
-                                }
-                        while ((cx*cx+cy*cy<4)&&i<25);
- 
-                        //i=i.toString(16); - commented out since not needed in this version
-                        context.beginPath();
-                        context.rect(x*4, y*4, 4, 4);
-                        context.fillStyle = pallette[i];
-                        context.fill();
-                        }
-                }
-        frame++;
-        creal=-.8+.6*Math.sin(frame/(3.14*20));
-        cimag=.156+.4*Math.cos(frame/(3.14*40));
-        
-}
- 
-for(x=0;x<9;x++) // this loop populates the color pallette array
-        {
-        color=(31*x).toString(16); // convert the number to hex
-        if(color.length==1) color='0'+color;  // add a zero in front if only one hex digit
-        pallette[x]="#"+color+color+'ff'; // colors 0-8: the Red and Green components change, Blue=FF
-        pallette[x+8]='#00ff'+color;      // colors 8-16: the Blue component changes, Red and Green=FF
-        pallette[17+x]="#"+color+'0000';  // colors 17-25: the Red component changes, Green and Blue=0
-        }
- 
-a=setInterval(julia,100);
- 
-</script>
 </body>
 </html>

@@ -28,11 +28,12 @@
     <script>
         function launch() {
             alert("if you have a scroll bar, press ctrl+shift+b to hide bookmarks bar. If you're on mobile, go away. This doesnt work with mobile because i̶t̶'̶s̶ ̶t̶o̶o̶ ̶h̶a̶r̶d̶  mobile gaming is stupid");
+            context.imageSmoothingEnabled = false;
             var scale = Math.min(game.clientWidth / camera.width, game.clientWidth / camera.height);
             
             context.scale(scale, scale);
-            paddingLeft = (game.clientWidth - camera.width * scale) / 2 / scale;
-            paddingTop = (game.clientHeight - camera.height * scale) / 2 / scale;
+            paddingLeft = ((game.clientWidth - camera.width * scale) / 2) / scale;
+            paddingTop = ((game.clientHeight - camera.height * scale) / 2) / scale;
             //context.translate(paddingLeft, paddingTop);
             reset();
             startGame();
@@ -50,15 +51,24 @@
         */
         var topPadding;
         var leftPadding;
-        var scale;
         
         var player;
-        var enemyDirectory = [];
+        var enemyDirectory = {
+            array: [],
+            add : function(element) {
+                this.array.push(element);
+            },
+            remove : function(element) {
+                array.filter(function(element) {
+                    return element.ID !== element.ID;
+                });
+            }
+        };
         
         function reset() {
             player = new Entity(0, 0);
-            enemy = new Entity(16, 16);
-            enemyDirectory.push(enemy);
+            enemy = new Entity(2, 2);
+            enemyDirectory.add(enemy);
         }
         
         var id  = setInterval(gameLoop, 1000 / 60);
@@ -79,13 +89,14 @@
             gameIsRunning = false;
         }
         
-        
         var camera = {
-            width: 128,
-            height: 128
+            width: 64,
+            height: 64
         };
         
+        var entityIndex = 0;
         function Entity(x, y) {
+            this.ID = entityIndex++;
             this.x = x;
             this.y = y;
             this.width = 4;
