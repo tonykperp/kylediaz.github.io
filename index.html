@@ -1,67 +1,7 @@
 <!DOCTYPE html>
 <html>
-<body>
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-117924862-1"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){
-            dataLayer.push(arguments);
-        }
-        gtag('js', new Date());
-
-        gtag('config', 'UA-117924862-1');
-    </script>
-    
-    <style>
-        canvas {
-            background-color: #f1f1f1;
-            width: 100%;
-            height: 100%;
-        }
-    </style>
-    <canvas id = "main" onLoad = "launch"></canvas>
-    <script>
-        var main = document.getElementById("main");
-        main.addEventListener("click", click);
-        var context = main.getContext("2d");
-        context.imageSmoothingEnabled = true;
-        
-        var focus = {
-            x: main.width / 2,
-            y: main.height / 2
-        }
-        var planet = {
-            x: main.width / 4   ,
-            y: main.height / 2,
-            direction: "clockwise"
-        }
-        
-        var distance = Math.sqrt((focus.x - planet.x)*(focus.x - planet.x) + (focus.y - planet.y)*(focus.y - planet.y));
-        var angle = 0;
-        
-        function updateFocus(x, y) {
-            console.log(x, y);
-            focus.x = x;
-            focus.y = y;
-            //distance = Math.sqrt((focus.x - planet.x)*(focus.x - planet.x) + (focus.y - planet.y)*(focus.y - planet.y));
-            console.log(distance);
-        }
-        
-        function click(event) {
-            //updateFocus(event.clientX, event.clientY);
-        }
-        
-        var id = setInterval(tick, 1000 / 60);
-        
-        function tick() {
-            context.clearRect(0, 0, main.width, main.height);
-            planet.x = focus.x + distance * Math.cos(angle);
-            planet.y = focus.y + distance * Math.sin(angle);
-            angle += 30 / 1000;
-            context.fillStyle = "red";
-            context.fillRect(planet.x, planet.y, 10, 10);
-        }
-    </script>
-</body>
+    <body>
+        <h1>Kyle Diaz reviews: Sharkboy and Lavagirl</h1>
+        <p>shark boy and lava girl was worse than the yu-gi-oh movie. It was so cornball, boring, unimaginative, unnecessarily frightening, and the 3-D effects fell flat.</p>
+    </body>
 </html>
